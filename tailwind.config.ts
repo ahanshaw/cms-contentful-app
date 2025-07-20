@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
+import owlSelector from "tailwindcss-owl";
 
 export default {
   content: [
@@ -17,5 +18,5 @@ export default {
   future: {
     hoverOnlyWhenSupported: true,
   },
-  plugins: [typography],
+  plugins: [typography, owlSelector],
 } satisfies Config;

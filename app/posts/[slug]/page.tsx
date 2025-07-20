@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { draftMode } from "next/headers";
 
-import MoreStories from "../../more-stories";
-import Avatar from "../../avatar";
-import Date from "../../date";
-import CoverImage from "../../cover-image";
+import MoreStories from "../../components/more-stories";
+import Avatar from "../../components/avatar";
+import Date from "../../components/date";
+import CoverImage from "../../components/cover-image";
+import Hero from "../../components/hero";
+import Cta from "../../components/cta";
 
 import { Markdown } from "@/lib/markdown";
 import { getAllPosts, getPostAndMorePosts } from "@/lib/api";
@@ -24,6 +26,7 @@ export default async function PostPage(
 ) {
   const params = await props.params;
   const { isEnabled } = await draftMode();
+
   const { post, morePosts } = await getPostAndMorePosts(params.slug, isEnabled);
 
   return (
@@ -32,21 +35,16 @@ export default async function PostPage(
         <Link href="/" className="hover:underline">
           Blog
         </Link>
-        .
       </h2>
       <article>
-        <h1 className="mb-12 text-center text-6xl font-bold leading-tight tracking-tighter md:text-left md:text-7xl md:leading-none lg:text-8xl">
-          {post.title}
-        </h1>
-        <div className="hidden md:mb-12 md:block">
-          {post.author && (
-            <Avatar name={post.author.name} picture={post.author.picture} />
-          )}
-        </div>
-        <div className="mb-8 sm:mx-0 md:mb-16">
-          <CoverImage title={post.title} url={post.coverImage.url} />
-        </div>
-        <div className="mx-auto max-w-2xl">
+		<Hero title={post.hero.title} subtitle={post.hero.subtitle} linkLabel={post.hero.link.label} linkTarget={post.hero.link.target} linkUrl={post.hero.link.url} imageUrl={post.hero.image.url} />
+
+        <div className="mx-auto max-w-2xl mt-[60px]">
+			 <div className="hidden md:mb-12 md:block">
+				{post.author && (
+					<Avatar name={post.author.name} picture={post.author.picture} />
+				)}
+			</div>
           <div className="mb-6 block md:hidden">
             {post.author && (
               <Avatar name={post.author.name} picture={post.author.picture} />
@@ -60,6 +58,7 @@ export default async function PostPage(
         <div className="mx-auto max-w-2xl">
           <div className="prose">
             <Markdown content={post.content} />
+			<Cta url={post.link.url} target={post.link.target} label={post.link.label} theme="dark" />
           </div>
         </div>
       </article>

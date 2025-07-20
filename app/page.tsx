@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { draftMode } from "next/headers";
 
-import Date from "./date";
-import CoverImage from "./cover-image";
-import Avatar from "./avatar";
-import MoreStories from "./more-stories";
+import FactsCarousel from "./components/facts-carousel";
+import CardOtter from "./components/card-otter";
+import Date from "./components/date";
+import CoverImage from "./components/cover-image";
+import Avatar from "./components/avatar";
+import MoreStories from "./components/more-stories";
 
-import { getAllPosts } from "@/lib/api";
+import { getFunFactsCarousel, getAllOtterCards } from "@/lib/api";
 import { CMS_NAME, CMS_URL } from "@/lib/constants";
 
 function Intro() {
@@ -78,24 +80,28 @@ function HeroPost({
 
 export default async function Page() {
   const { isEnabled } = await draftMode();
-  const allPosts = await getAllPosts(isEnabled);
-  const heroPost = allPosts[0];
-  const morePosts = allPosts.slice(1);
+  const funFactsCarousel = await getFunFactsCarousel(isEnabled);
+  const funFactsHead = funFactsCarousel.carousel.head;
+  const funFactsSlides = funFactsCarousel.carousel.factsCollection.items;
+  const otters = await getAllOtterCards(isEnabled);
 
   return (
-    <div className="container mx-auto px-5">
-      <Intro />
-      {heroPost && (
-        <HeroPost
-          title={heroPost.title}
-          coverImage={heroPost.coverImage}
-          date={heroPost.date}
-          author={heroPost.author}
-          slug={heroPost.slug}
-          excerpt={heroPost.excerpt}
-        />
-      )}
-      <MoreStories morePosts={morePosts} />
+    <div className="container mx-auto pt-5 o-12">
+		<h1 className="font-bold text-8xl m-0">Otters!</h1>
+		<section>
+			<h2 className="font-bold text-5xl translate-y-[2rem]">{funFactsHead}</h2>
+			<FactsCarousel funFacts={funFactsSlides} />
+		</section>
+		<section>
+			<h2 className="font-bold text-5xl mb-5">All Otters</h2>
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+				{otters.map((otter) => {
+					return(
+						<CardOtter key={otter.sys.id} slug={otter.slug} title={otter.title} excerpt={otter.excerpt} imageUrl={otter.hero.image.url} />
+					)
+				})}
+			</div>
+		</section>
     </div>
   );
 }
