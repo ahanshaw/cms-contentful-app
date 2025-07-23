@@ -18,5 +18,5 @@ export default {
   future: {
     hoverOnlyWhenSupported: true,
   },
-  plugins: [typography, owlSelector],
+  plugins: [typography],
 } satisfies Config;
