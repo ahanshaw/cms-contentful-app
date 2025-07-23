@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
-import owlSelector from "tailwindcss-owl";
+//import owlSelector from "tailwindcss-owl";
 
 export default {
   content: [
