@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import ContentfulImage from "@/lib/contentful-image";
 import type { IOtterCard } from "@/lib/interfaces";
 
-const FunFact: FunctionComponent<IOtterCard> = ({ slug, title, excerpt, imageUrl }) => {
+const OtterCard: FunctionComponent<IOtterCard> = ({ slug, title, imageUrl }) => {
 	return (
 		<div>
 			<a href={`/otters/${slug}`} className="relative block aspect-[1/1] rounded-xl overflow-hidden">
@@ -20,4 +20,4 @@ const FunFact: FunctionComponent<IOtterCard> = ({ slug, title, excerpt, imageUrl
 	)
 }
 
-export default FunFact;
+export default OtterCard;

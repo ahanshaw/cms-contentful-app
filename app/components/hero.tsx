@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import type { IHero } from "@/lib/interfaces";
 
 import ContentfulImage from "@/lib/contentful-image";
-import Cta from "./cta";
+import Cta from "./Cta";
 
 const Hero: FunctionComponent<IHero> = ({
 	title,

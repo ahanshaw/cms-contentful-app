@@ -1,182 +1,71 @@
-// posts
-const POST_GRAPHQL_FIELDS = `
-  slug
-  title
-  coverImage {
-    url
-  }
-  hero {
-    title
-	subtitle
-	image {
-	  url
-	}
-	link {
-	  label
-	  target
-	  url
-	}
-  }
-  date
-  author {
-    name
-    picture {
-      url
-    }
-  }
-  excerpt
-  content {
-    json
-    links {
-      assets {
-        block {
-          sys {
-            id
-          }
-          url
-          description
-        }
-      }
-    }
-  }
-  link {
-    label
-	target
-	url
-  }
-`;
-
-async function fetchGraphQL(query: string, preview = false): Promise<any> {
-  return fetch(
-    `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${
-          preview
-            ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-            : process.env.CONTENTFUL_ACCESS_TOKEN
-        }`,
-      },
-      body: JSON.stringify({ query }),
-      next: { tags: ["posts"] },
-    },
-  ).then((response) => response.json());
-}
-
-function extractPost(fetchResponse: any): any {
-  return fetchResponse?.data?.postCollection?.items?.[0];
-}
-
-function extractPostEntries(fetchResponse: any): any[] {
-  return fetchResponse?.data?.postCollection?.items;
-}
-
-export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
-  const entry = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
-        }
-      }
-    }`,
-    true,
-  );
-  return extractPost(entry);
-}
-
-export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
-  const entries = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
-        isDraftMode ? "true" : "false"
-      }) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
-        }
-      }
-    }`,
-    isDraftMode,
-  );
-  return extractPostEntries(entries);
-}
-
-export async function getPostAndMorePosts(
-  slug: string,
-  preview: boolean,
-): Promise<any> {
-  const entry = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug: "${slug}" }, preview: ${
-        preview ? "true" : "false"
-      }, limit: 1) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
-        }
-      }
-    }`,
-    preview,
-  );
-  const entries = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
-        preview ? "true" : "false"
-      }, limit: 2) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
-        }
-      }
-    }`,
-    preview,
-  );
-  return {
-    post: extractPost(entry),
-    morePosts: extractPostEntries(entries),
-  };
-}
-
-// otters
 // otter page
 const OTTER_GRAPHQL_FIELDS = `
-  sys {
-   id 
-  }
-  slug
-  title
-  hero {
-    title
-	subtitle
-	image {
-	  url
+	sys {
+		id
 	}
-	link {
-	  label
-	  target
-	  url
+	slug
+	title
+	hero {
+		title
+		subtitle
+		image {
+			url
+		}
+		link {
+			label
+			target
+			url
+		}
 	}
-  }
-  excerpt
-  content {
-    json
-    links {
-      assets {
-        block {
-          sys {
-            id
-          }
-          url
-          description
-        }
-      }
-    }
-  }
-  link {
-    label
-	target
-	url
-  }
+	excerpt
+	sectionsCollection {
+		items {
+			... on Wysiwyg {
+            	__typename
+				sys {
+				  id
+				}
+				content {
+					json
+					links {
+						assets {
+							block {
+								sys {
+									id
+								}
+								url
+								description
+							}
+						}
+					}
+				}
+			}
+			... on Link {
+            	__typename
+				sys {
+				  id
+				}
+				label
+				target
+				url
+			}
+			... on FunFact {
+            	__typename
+				sys {
+				  id
+				}
+				head
+				fact
+				link {
+					title
+					slug
+				}
+				image {
+					url
+				}
+			}
+		}
+	}
 `;
 
 // otter card
@@ -240,7 +129,7 @@ export async function getAllOtters(isDraftMode: boolean): Promise<any[]> {
     `query {
       otterCollection(where: { slug_exists: true }, order: title_ASC, preview: ${
         isDraftMode ? "true" : "false"
-      }) {
+      }, limit: 5) {
         items {
           ${OTTER_GRAPHQL_FIELDS}
         }
@@ -265,6 +154,28 @@ export async function getAllOtterCards(isDraftMode: boolean): Promise<any[]> {
     isDraftMode,
   );
   return extractOtterEntries(entries);
+}
+
+export async function getOtter(
+  slug: string,
+  preview: boolean,
+): Promise<any> {
+  const entry = await fetchOtterGraphQL(
+    `query {
+      otterCollection(where: { slug: "${slug}" }, limit: 1, preview: ${
+        preview ? "true" : "false"
+      }) {
+        items {
+          ${OTTER_GRAPHQL_FIELDS}
+        }
+      }
+    }`,
+    preview,
+  );
+
+  return {
+    post: extractOtter(entry),
+  };
 }
 
 export async function getOtterAndMoreOtters(
@@ -307,7 +218,6 @@ const FUNFACTS_GRAPHQL_FIELDS = `
   sys {
    id 
   }
-  slug
   head
   fact
   link {
