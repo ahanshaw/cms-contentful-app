@@ -10,7 +10,6 @@
     "@contentful/rich-text-react-renderer": "^15.17.1",
     "@contentful/rich-text-types": "^16.2.1",
     "@contentful/vercel-nextjs-toolkit": "latest",
-    "@tailwindcss/typography": "0.5.9",
     "@types/node": "^20.5.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
@@ -24,8 +23,5 @@
     "swiper": "^11.2.10",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6"
-  },
-  "devDependencies": {
-    "tailwindcss-owl": "^2.0.0"
   }
 }
